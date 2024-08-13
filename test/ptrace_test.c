@@ -40,6 +40,7 @@ int main() {
         if (WIFEXITED(status)) {
             printf("Child exited with status %d\n", WEXITSTATUS(status));
         }
+        
     } else {
         perror("fork");
         return 1;
