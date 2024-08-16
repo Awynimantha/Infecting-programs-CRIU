@@ -22,22 +22,30 @@ int main() {
         execl("/bin/ls","ls", NULL);
 
     } else {
-        printf("Inside");
         while(1){
             waitpid(child, &status, 0);
             orig_rax = ptrace(PTRACE_PEEKUSER,
                       child, 8 * ORIG_RAX, NULL);
+                      
             if(orig_rax == SYS_write) {
                 if(insyscall == 0) {
                     insyscall = 1;
-                    params[0] = ptrace(PTRACE_PEEKUSER, child, 8 * RBX, NULL);
-                    params[1] = ptrace(PTRACE_PEEKUSER, child, 8 * RCX, NULL);
-                    params[2] = ptrace(PTRACE_PEEKUSER, child, 8 * RDX, NULL);
+                    //first argument
+                    params[0] = ptrace(PTRACE_PEEKUSER, 
+                                        child, 8 * RBX, NULL);
+                    //second argument
+                    params[1] = ptrace(PTRACE_PEEKUSER, 
+                                        child, 8 * RCX, NULL);
+                    //third argument
+                    params[2] = ptrace(PTRACE_PEEKUSER, 
+                                        child, 8 * RDX, NULL);
 
-                    printf("Write called with " "%ld, %ld, %ld\n",params[0], params[1],params[2]);
+                    printf("Write called with " "%ld, %ld, %ld\n",
+                            params[0], params[1],params[2]);
                     break;
                 } else {
-                    orig_rax = ptrace(PTRACE_PEEKUSER, child, 8 * RAX, NULL);
+                    orig_rax = ptrace(PTRACE_PEEKUSER, 
+                                        child, 8 * RAX, NULL);
                     printf("RAX: %dl\n", orig_rax);
                     insyscall = 0;
                 }
