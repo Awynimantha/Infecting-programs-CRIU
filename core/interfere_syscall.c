@@ -43,9 +43,40 @@ void getdata(pid_t child, long addr, char *str, int len) {
     j = len % long_size;
 
     if(j != 0) {
-        data.val = ptrace(laddr, data.chars, j);
+        data.val = ptrace(PTRACE_PEEKDATA,
+                          child, addr + i * 8,
+                          NULL);
+        memcpy(laddr, data.chars, j);
     }
     str[len] = '\0';
     
 }
 
+void putdata(pid_t child, long addr, char *str, int len) {
+    char * laddr = str;
+    int i = 0;
+    int j = len/long_size;
+    union u {
+        long val;
+        char chars[long_size];
+    } data;
+
+    while( i < j) {
+        memcpy(data.chars, laddr, long_size);
+        ptrace(PTRACE_POKEDATA, child, addr + i * 8, NULL);
+        i++;
+        laddr += long_size;
+    };
+
+    j = len % long_size;
+
+    if(j != 0) {
+        memcpy(data.chars, laddr ,j);
+        ptrace(PTRACE_POKEDATA,
+                          child, addr + i * 8,
+                          NULL);
+    }
+    str[len] = '\0';
+
+
+}
