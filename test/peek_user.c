@@ -50,7 +50,7 @@ int main() {
                     insyscall = 0;
                 }
             }
-             ptrace(PTRACE_SYSCALL,
+            ptrace(PTRACE_SYSCALL,
                    child, NULL, NULL);
         }
     }
