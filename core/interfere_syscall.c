@@ -5,6 +5,9 @@
 #include <sys/user.h>
 #include <sys/reg.h>
 #include<stdlib.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<string.h>
 //ptrace read long size data
 int long_size = sizeof(long);
 
@@ -90,6 +93,7 @@ int main() {
         int insyscall = 0;
         long params[3];
         char * str;
+        child = fork();
 
         if(child == 0) {
             ptrace(PTRACE_TRACEME, 0, NULL, NULL);
@@ -124,12 +128,15 @@ int main() {
                 } else {
                     orig_rax = ptrace(PTRACE_PEEKUSER, 
                                         child, 8 * RAX, NULL);
-                    printf("RAX: %dl\n", orig_rax);
+                    printf("RAX: %ld\n", orig_rax);
                     insyscall = 0;
                 }
             }
+            ptrace(PTRACE_SYSCALL, child, NULL, NULL);
         }
 
 
 
+}
+return 0;
 }
